@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# Restart the core audio daemon
+#
+
+sudo killall coreaudiod

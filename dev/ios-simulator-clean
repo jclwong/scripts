@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# Clean up simulator space
+#
+
+xcrun simctl delete unavailable
+
+# Theres still a lot of junk leftover. Room to improve here
+# ie derived data

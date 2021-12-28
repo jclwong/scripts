@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# Logs CPU temperature every 5 seconds
+#
+
+sudo powermetrics -s smc | grep -i "CPU die temperature"

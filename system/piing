@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# Ping google to check connectivity
+#
+
+ping 8.8.8.8

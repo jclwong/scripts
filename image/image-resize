@@ -1,0 +1,82 @@
+#!/bin/sh
+#
+# Downsize image
+#
+# Prerequisites: ImageMagick
+# Arguments: WIDTH HEIGHT FILENAME
+# Accepts: 	png, jpg, jpeg, gif
+# Outputs: 	png
+#
+
+# =====================================
+# ==========[ Library Check ]==========
+# =====================================
+
+command -v convert >/dev/null 2>&1 || {
+	echo >&2 'Error: cannot find "convert" command.... Is ImageMagick installed?';
+	exit 1;
+}
+
+# ================================================
+# ==========[ Arguments Validity Check ]==========
+# ================================================
+
+if [ "$#" -ne 3 ]; then
+	echo "Error: Incorrect number of arguments ($#). Needs to be 3."
+	echo "Usage: ${0##*/} WIDTH HEIGHT FILENAME"
+	echo "ie:    ${0##*/} 360 480 test.png"
+	exit 1
+fi
+
+width=$1
+height=$2
+filePath=$3
+
+numRegExp='^[0-9]+$'
+if ! [[ $width =~ $numRegExp ]] ; then
+	echo "Error: Width is not a valid number" >&2
+	exit 1
+fi
+if ! [[ $height =~ $numRegExp ]] ; then
+	echo "Error: Height is not a valid number" >&2
+	exit 1
+fi
+
+if [ ! -f "$filePath" ]; then
+	echo "File ($filePath) not found!"
+	exit 1
+fi
+
+fileFullName=`echo $filePath|grep -i ".png\|.jpg\|.jpeg\|.gif\|.tiff"`
+if [ ! -n "$fileFullName" ] ; then
+	echo "File not a valid format (png,jpg,jpeg,gif,tiff)"
+	exit 1
+fi
+
+
+# ==========================================
+# ==========[ Converting Process ]==========
+# ==========================================
+
+echo "File: \t\t"$fileFullName
+echo "Resolution:\t""$width""x""$height"
+printf "Converting:\t...."
+
+fileName="${fileFullName%.*}"
+fileExt="${fileFullName##*.}"
+
+
+# 1/3 - Strip(reconvert) non-standard PNG (Left by amazing Photoshop.)
+if [ $fileExt == "png" ] ; then
+	convert "$fileFullName" -strip "$fileFullName"
+fi
+
+# 2/3 - The actual conversion
+convert "$fileName"".""$fileExt" -resize "$width""x""$height"\> "$fileName"".png"
+
+# 3/3 - Cleanup - Original PNGs are overwritten. Remove anything not originally PNG format
+if [ $fileExt != "png" ] ; then
+	rm $fileFullName
+fi
+
+echo " Done!"

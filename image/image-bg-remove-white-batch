@@ -1,0 +1,73 @@
+#!/bin/sh
+#
+# Remove white background color from all images in directory
+# Fuzz: 5%
+#
+# Prerequisites: ImageMagick
+# Arguments: DIRPATH
+# Accepts:   png
+# Outputs:   png
+#
+
+# =====================================
+# ==========[ Library Check ]==========
+# =====================================
+
+command -v convert >/dev/null 2>&1 || {
+	echo >&2 'Error: cannot find "convert" command.... Is ImageMagick installed?';
+	exit 1;
+}
+
+# ================================================
+# ==========[ Arguments Validity Check ]==========
+# ================================================
+
+if [ "$#" -ne 1 ]; then
+	echo "Error: Incorrect number of arguments ($#). Needs to be 1."
+	echo "Usage: ${0##*/} DIRPATH"
+	echo "ie:    ${0##*/} ~"
+	exit 1
+fi
+
+dirPath=$1
+
+if [ ! -d "$dirPath" ]; then
+   echo "Error: Directory path does not exist ($dirPath)" >&2
+   exit 1
+fi
+
+
+
+# ===================================================
+# ==========[ Find num conversions needed ]==========
+# ===================================================
+
+numToProcess=0
+for f in *
+do
+    fileFullName=`echo $f|grep -i ".png\|.jpg\|.jpeg\|.gif\|.tiff"`
+	fileName="${fileFullName%.*}"
+	fileExt="${fileFullName##*.}"
+	if [ -n "$fileFullName" ] ; then
+    	let "numToProcess += 1"
+    fi
+done
+
+# ==================================
+# ==========[ Conversion ]==========
+# ==================================
+
+curProcess=0
+
+for f in *
+do
+	let "curProcess += 1"
+	echo "[""$curProcess"" / "" $numToProcess""]"
+
+	fileFullName=`echo $f|grep -i ".png\|.jpg\|.jpeg\|.gif\|.tiff"`
+	if [ -n "$fileFullName" ] ; then
+		imageRemoveBgWhite $fileFullName
+	fi
+done
+
+printf "All done!\n\n"

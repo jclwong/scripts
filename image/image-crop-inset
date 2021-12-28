@@ -1,0 +1,93 @@
+#!/bin/sh
+#
+# Cut up a spritesheet into individual images
+#
+# Prerequisites: ImageMagick
+# Arguments: LEFT TOP RIGHT BOTTOM FILENAME
+# Accepts: 	png, jpg, jpeg, gif
+# Outputs: 	png
+#
+
+# =====================================
+# ==========[ Library Check ]==========
+# =====================================
+
+command -v convert >/dev/null 2>&1 || {
+	echo >&2 'Error: cannot find "convert" command.... Is ImageMagick installed?';
+	exit 1;
+}
+
+# ================================================
+# ==========[ Arguments Validity Check ]==========
+# ================================================
+
+if [ "$#" -ne 5 ] ; then
+	echo "Error: Incorrect number of arguments ($#). Needs to be 5."
+	echo "Usage: ${0##*/} LEFT TOP RIGHT BOTTOM FILENAME"
+	echo "ie:    ${0##*/} 0 8 0 8 cool-spritesheet.png"
+	exit 1
+fi
+
+leftCrop=$1
+topCrop=$2
+rightCrop=$3
+bottomCrop=$4
+filePath=$5
+
+numRegExp='^[0-9]+$'
+if ! [[ $leftCrop =~ $numRegExp ]] ; then
+	echo "Error: LEFT is not a valid number" >&2
+	exit 1
+fi
+if ! [[ $topCrop =~ $numRegExp ]] ; then
+	echo "Error: TOP is not a valid number" >&2
+	exit 1
+fi
+if ! [[ $rightCrop =~ $numRegExp ]] ; then
+	echo "Error: RIGHT is not a valid number" >&2
+	exit 1
+fi
+if ! [[ $bottomCrop =~ $numRegExp ]] ; then
+	echo "Error: BOTTOM is not a valid number" >&2
+	exit 1
+fi
+
+if [ ! -f "$filePath" ]; then
+	echo "File ($filePath) not found!"
+	exit 1
+fi
+
+fileFullName=`echo $filePath|grep -i ".png\|.jpg\|.jpeg\|.gif\|.tiff"`
+if [ ! -n "$fileFullName" ] ; then
+	echo "File not a valid format (png,jpg,jpeg,gif,tiff)"
+	exit 1
+fi
+
+imageWidth=$(identify -format "%w" $filePath)
+imageHeight=$(identify -format "%h" $filePath)
+
+targetWidth=$(($imageWidth - $leftCrop - $rightCrop))
+targetHeight=$(($imageHeight - $topCrop - $bottomCrop))
+
+# printf "\niWidth: $imageWidth - iHeight: $imageHeight - tWidth: $targetWidth - tHeight: $targetHeight\n"
+
+# ==========================================
+# ==========[ Converting Process ]==========
+# ==========================================
+
+printf "Cropping: ...."
+
+fileName="${fileFullName%.*}"
+fileExt="${fileFullName##*.}"
+
+# 1/2 - Strip(reconvert) non-standard PNG (Left by amazing Photoshop.)
+if [ $fileExt == "png" ] ; then
+	convert "$fileFullName" -strip "$fileFullName"
+fi
+
+# 2/2 - Slice n dice!
+convert "$fileFullName" -crop "$targetWidth"x"$targetHeight"+"$leftCrop"+"$topCrop" "$fileName"_crop."$fileExt"
+# convert "$fileFullName" -crop "$targetWidth"x"$targetHeight"+"0"+"14" "$fileName"_crop."$fileExt"
+# convert "$fileFullName" -crop "$targetWidth"x"$targetHeight"+"0"+"14" "$fileName"_crop."$fileExt"
+
+echo " Done!"

@@ -1,0 +1,76 @@
+#!/bin/sh
+#
+# Quantise colors of a single image
+#
+# Prerequisites: ImageMagick
+# Arguments: FILENAME NUMCOLORS
+# Accepts: 	png, jpg, jpeg, gif
+# Outputs: 	png
+#
+
+# =====================================
+# ==========[ Library Check ]==========
+# =====================================
+
+command -v convert >/dev/null 2>&1 || {
+	echo >&2 'Error: cannot find "convert" command.... Is ImageMagick installed?';
+	exit 1;
+}
+
+# ================================================
+# ==========[ Arguments Validity Check ]==========
+# ================================================
+
+if [ "$#" -ne 2 ]; then
+	echo "Error: Incorrect number of arguments ($#). Needs to be 2."
+	echo "Usage: ${0##*/} FILENAME NUMCOLORS"
+	echo "ie:    ${0##*/} colorWheel.png 8"
+	exit 1
+fi
+
+filePath=$1
+numColors=$2
+
+numRegExp='^[0-9]+$'
+if ! [[ $numColors =~ $numRegExp ]] ; then
+	echo "Error: numColors is not a valid number" >&2
+	exit 1
+fi
+
+if [ ! -f "$filePath" ]; then
+	echo "File ($filePath) not found!"
+	exit 1
+fi
+
+fileFullName=`echo $filePath|grep -i ".png\|.jpg\|.jpeg\|.gif"`
+if [ ! -n "$fileFullName" ] ; then
+	echo "File not a valid format (png,jpg,jpeg,gif)"
+	exit 1
+fi
+
+
+# ==========================================
+# ==========[ Converting Process ]==========
+# ==========================================
+
+echo "File: \t\t"$fileFullName
+printf "Quantising:\t...."
+
+fileName="${fileFullName%.*}"
+fileExt="${fileFullName##*.}"
+
+
+# 1/3 - Strip(reconvert) non-standard PNG (Left by amazing Photoshop.)
+if [ $fileExt == "png" ] ; then
+	convert "$fileFullName" -strip "$fileFullName"
+fi
+
+# 2/3 - The actual conversion
+convert "$fileName"".""$fileExt" -dither None -colors $numColors "$fileName""_quantize_""$numColors.png"
+
+# 3/3 - Cleanup - Original PNGs are overwritten. Remove anything not originally PNG format
+if [ $fileExt != "png" ] ; then
+	rm $fileFullName
+fi
+
+echo " Done!"

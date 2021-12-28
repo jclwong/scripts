@@ -1,0 +1,87 @@
+#!/bin/sh
+#
+# Uses ImageMagick to cut up spritesheets
+#
+# Prerequisites: ImageMagick
+# Arguments: NUM_ROW NUM_COL FILENAME
+# Accepts: 	png, jpg, jpeg, gif
+# Outputs: 	png
+#
+
+# =====================================
+# ==========[ Library Check ]==========
+# =====================================
+
+command -v convert >/dev/null 2>&1 || {
+	echo >&2 'Error: cannot find "convert" command.... Is ImageMagick installed?';
+	exit 1;
+}
+
+# ================================================
+# ==========[ Arguments Validity Check ]==========
+# ================================================
+
+if [ "$#" -ne 3 ] ; then
+	echo "Error: Incorrect number of arguments ($#). Needs to be 3."
+	echo "Usage: ${0##*/} NUM_ROW NUM_COL FILENAME"
+	echo "ie:    ${0##*/} 2 8 cool-spritesheet.png"
+	exit 1
+fi
+
+numRow=$1
+numCol=$2
+filePath=$3
+
+numRegExp='^[0-9]+$'
+if ! [[ $numCol =~ $numRegExp ]] ; then
+	echo "Error: Width is not a valid number" >&2
+	exit 1
+fi
+if ! [[ $numRow =~ $numRegExp ]] ; then
+	echo "Error: Height is not a valid number" >&2
+	exit 1
+fi
+
+if [ ! -f "$filePath" ]; then
+	echo "File ($filePath) not found!"
+	exit 1
+fi
+
+fileFullName=`echo $filePath|grep -i ".png\|.jpg\|.jpeg\|.gif\|.tiff"`
+if [ ! -n "$fileFullName" ] ; then
+	echo "File not a valid format (png,jpg,jpeg,gif,tiff)"
+	exit 1
+fi
+
+# ==============================
+# ==========[ Format ]==========
+# ==============================
+
+totalCount=$(($numRow * $numCol))
+fileSpliceFormat="%d"
+if [ $totalCount -gt 999 ] ; then
+	fileSpliceFormat="%04d"
+elif [ $totalCount -gt 99 ] ; then
+	fileSpliceFormat="%03d"
+elif [ $totalCount -gt 9 ] ; then
+	fileSpliceFormat="%02d"
+fi
+
+# ==========================================
+# ==========[ Converting Process ]==========
+# ==========================================
+
+printf "Cutting: ...."
+
+fileName="${fileFullName%.*}"
+fileExt="${fileFullName##*.}"
+
+# 1/2 - Strip(reconvert) non-standard PNG (Left by amazing Photoshop.)
+if [ $fileExt == "png" ] ; then
+	convert "$fileFullName" -strip "$fileFullName"
+fi
+
+# 2/2 - Slice n dice!
+magick convert "$fileName"".""$fileExt" -crop "$numCol""x""$numRow"-0-0@ +repage +adjoin "$fileName"_"$fileSpliceFormat"".png"
+
+echo " Done!"

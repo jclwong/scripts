@@ -1,0 +1,69 @@
+#!/bin/sh
+#
+# Convert images inside directory to animated GIF
+# Delay is in milliseconds
+#
+# Prerequisites: ImageMagick
+# Arguments: DELAY (-reversed) DIRPATH
+# Accepts: 	png, jpg, jpeg, gif
+# Outputs: 	png
+#
+
+# =====================================
+# ==========[ Library Check ]==========
+# =====================================
+
+command -v convert >/dev/null 2>&1 || {
+	echo >&2 'Error: cannot find "convert" command.... Is ImageMagick installed?';
+	exit 1;
+}
+
+# ================================================
+# ==========[ Arguments Validity Check ]==========
+# ================================================
+
+if [ "$#" -ne 2 ] && [ "$#" -ne 3 ] ; then
+	echo "Error: Incorrect number of arguments ($#). Needs to be 2 or 3."
+	echo "Usage: ${0##*/} DELAY (-reversed) DIRPATH"
+	echo "ie:    ${0##*/} 20 ~"
+	echo "ie:    ${0##*/} 20 -reversed ~"
+	exit 1
+fi
+
+delay=$1
+dirPath=$2
+
+if [ "$#" -eq 3 ] ; then
+	delay=$1
+	dirPath=$3
+fi
+
+numRegExp='^[0-9]+$'
+if ! [[ $delay =~ $numRegExp ]] ; then
+	echo "Error: Width is not a valid number" >&2
+	exit 1
+fi
+
+if [ ! -d "$dirPath" ]; then
+   echo "Error: Directory path does not exist ($dirPath)" >&2
+   exit 1
+fi
+
+if [ "$#" -eq 3 ] && [ $2 != "-reverse" ] ; then
+		echo "3 arguments, 2nd must be -reverse"
+		exit 1
+fi
+
+# ==========================================
+# ==========[ Converting Process ]==========
+# ==========================================
+
+printf "Compiling GIF:\t...."
+
+if [ "$#" -eq 3 ] ; then
+	convert -reverse -delay $delay -loop 0 -dispose 'Previous' *.png anim.gif
+else
+	convert -delay $delay -loop 0 -dispose 'Previous' *.png anim.gif
+fi
+
+echo " Done!"

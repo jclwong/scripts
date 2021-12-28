@@ -1,0 +1,8 @@
+#!/bin/bash
+#
+# Print local and public ipaddress
+#
+
+printf 'Local IP Address:\n  ' &&  ifconfig | grep 'inet' | grep 'broadcast' | cut -d' ' -f2
+printf 'Public IP Address:\n  ' && curl https://ipinfo.io/ip
+echo ''

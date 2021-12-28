@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# Makes a system sound to test audio output
+#
+
+tput bel
