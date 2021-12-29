@@ -1,0 +1,11 @@
+#!/bin/sh
+#
+# Check image magic exists
+#
+
+command -v convert >/dev/null 2>&1 || {
+	echo >&2 'lib-check-image-magick: Error: cannot find "convert" command';
+	exit 1;
+}
+
+exit 0;

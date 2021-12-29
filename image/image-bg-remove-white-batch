@@ -9,14 +9,7 @@
 # Outputs:   png
 #
 
-# =====================================
-# ==========[ Library Check ]==========
-# =====================================
-
-command -v convert >/dev/null 2>&1 || {
-	echo >&2 'Error: cannot find "convert" command.... Is ImageMagick installed?';
-	exit 1;
-}
+bash lib-check-image-magick; if [ $? -eq 1 ]; then exit 1; fi
 
 # ================================================
 # ==========[ Arguments Validity Check ]==========

@@ -8,6 +8,8 @@
 # Outputs: 	png
 #
 
+bash lib-check-image-magick; if [ $? -eq 1 ]; then exit 1; fi
+
 # ================================================
 # ==========[ Arguments Validity Check ]==========
 # ================================================
