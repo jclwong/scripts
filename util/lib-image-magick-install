@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Install image magick
+#
+
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  brew install imagemagick
+  brew install ghostscript # Image magick uses this
+fi

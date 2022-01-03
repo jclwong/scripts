@@ -3,7 +3,7 @@
 # Given a 1024x1024 image, resize to all required iOS app icon sizes
 #
 
-bash lib-check-image-magick; if [ $? -eq 1 ]; then exit 1; fi
+bash lib-image-magick-check; if [ $? -eq 1 ]; then exit 1; fi
 
 # ================================================
 # ==========[ Arguments Validity Check ]==========

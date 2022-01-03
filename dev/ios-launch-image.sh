@@ -3,7 +3,7 @@
 # Resize a large iOS launch screen image to all required sizes
 #
 
-bash lib-check-image-magick; if [ $? -eq 1 ]; then exit 1; fi
+bash lib-image-magick-check; if [ $? -eq 1 ]; then exit 1; fi
 
 # ================================================
 # ==========[ Arguments Validity Check ]==========
