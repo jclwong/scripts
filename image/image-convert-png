@@ -1,7 +1,6 @@
 #!/bin/sh
 #
 # Convert an image to PNG format
-# This will also clean the image of metadata
 #
 # Prerequisites: ImageMagick
 # Arguments: FILENAME

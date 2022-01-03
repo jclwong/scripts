@@ -3,7 +3,7 @@
 # Quantise colors of a single image
 #
 # Prerequisites: ImageMagick
-# Arguments: FILENAME NUMCOLORS
+# Arguments: NUMCOLORS FILENAME
 # Accepts: 	png, jpg, jpeg, gif
 # Outputs: 	png
 #
@@ -16,13 +16,13 @@ bash lib-check-image-magick; if [ $? -eq 1 ]; then exit 1; fi
 
 if [ "$#" -ne 2 ]; then
 	echo "Error: Incorrect number of arguments ($#). Needs to be 2."
-	echo "Usage: ${0##*/} FILENAME NUMCOLORS"
-	echo "ie:    ${0##*/} colorWheel.png 8"
+	echo "Usage: ${0##*/} NUMCOLORS FILENAME"
+	echo "ie:    ${0##*/} 8 colorWheel.png"
 	exit 1
 fi
 
-filePath=$1
-numColors=$2
+numColors=$1
+filePath=$2
 
 numRegExp='^[0-9]+$'
 if ! [[ $numColors =~ $numRegExp ]] ; then

@@ -1,10 +1,9 @@
 #!/bin/sh
 #
 # Convert images inside directory to animated GIF
-# Delay is in milliseconds
 #
 # Prerequisites: ImageMagick
-# Arguments: DELAY (-reversed) DIRPATH
+# Arguments: DELAY_MS (-reversed) DIRPATH
 # Accepts: 	png, jpg, jpeg, gif
 # Outputs: 	png
 #
@@ -17,7 +16,7 @@ bash lib-check-image-magick; if [ $? -eq 1 ]; then exit 1; fi
 
 if [ "$#" -ne 2 ] && [ "$#" -ne 3 ] ; then
 	echo "Error: Incorrect number of arguments ($#). Needs to be 2 or 3."
-	echo "Usage: ${0##*/} DELAY (-reversed) DIRPATH"
+	echo "Usage: ${0##*/} DELAY_MS (-reversed) DIRPATH"
 	echo "ie:    ${0##*/} 20 ~"
 	echo "ie:    ${0##*/} 20 -reversed ~"
 	exit 1

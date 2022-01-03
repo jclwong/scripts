@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Cut up a spritesheet into individual images
+# Crops an image
 #
 # Prerequisites: ImageMagick
 # Arguments: LEFT TOP RIGHT BOTTOM FILENAME
@@ -62,8 +62,6 @@ imageHeight=$(identify -format "%h" $filePath)
 targetWidth=$(($imageWidth - $leftCrop - $rightCrop))
 targetHeight=$(($imageHeight - $topCrop - $bottomCrop))
 
-# printf "\niWidth: $imageWidth - iHeight: $imageHeight - tWidth: $targetWidth - tHeight: $targetHeight\n"
-
 # ==========================================
 # ==========[ Converting Process ]==========
 # ==========================================
@@ -80,7 +78,5 @@ fi
 
 # 2/2 - Slice n dice!
 convert "$fileFullName" -crop "$targetWidth"x"$targetHeight"+"$leftCrop"+"$topCrop" "$fileName"_crop."$fileExt"
-# convert "$fileFullName" -crop "$targetWidth"x"$targetHeight"+"0"+"14" "$fileName"_crop."$fileExt"
-# convert "$fileFullName" -crop "$targetWidth"x"$targetHeight"+"0"+"14" "$fileName"_crop."$fileExt"
 
 echo " Done!"
